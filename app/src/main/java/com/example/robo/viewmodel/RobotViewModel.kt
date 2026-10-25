@@ -1,5 +1,6 @@
 package com.example.robo.viewmodel
 
+import com.example.robo.BuildConfig
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
