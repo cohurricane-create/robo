@@ -1,0 +1,44 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch: # Qo'lda bir tugma bilan ishga tushirish imkoniyati
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Repozitoriyani yuklash
+      uses: actions/checkout@v4
+
+    - name: Java 17 ni sozlash
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Gradle keshini sozlash
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
+    - name: Gradle wrapper'ga ruxsat berish
+      run: chmod +x gradlew
+
+    - name: APK ni Build qilish (Assemble Debug)
+      run: ./gradlew assembleDebug --stacktrace
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+    - name: APK ni yuklab olish uchun saqlash (Upload Artifact)
+      uses: actions/upload-artifact@v4
+      with:
+        name: Robo-EMO-LOOI-APK
+        path: app/build/outputs/apk/debug/app-debug.apk
